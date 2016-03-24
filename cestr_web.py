@@ -85,18 +85,39 @@ def initialize_db():
 
 	url = 'http://{0}:{1}/initialize_db'.format(app_addr, app_port)
 
-	try:
+	try: 
 		result = requests.get(url)
-		html += '''	<H3>Success</H3>
+	except:
+		html += '''	<H3>Application Server Failure</H3>
+					<p>
+					'''
+		html += 'Not able to communicate with Application Server at {0}.<b><br>'.format(app_addr)
+		return html
+
+	if (result.status_code == 200):
+		decoded_json = json.loads(result.text)
+		if decoded_json['status']== 'FAIL':
+			html += '''<H3>Database Failure</H3>
 					<p>
 					Response from Application Server: <b>
 					'''
-		html += result.text
-	except requests.exceptions.RequestException as error:   
-		html += '''	<H3>Failure</H3>
+			html += decoded_json['results']
+			return html
+
+		elif decoded_json['status']== 'OK':
+			html += '''	<H3>Success</H3>
 					<p>
-					Response from Application Server: Comming soon!<b>
+					Response from Application Server: <b>
 					'''
+			html += decoded_json['results']
+
+	else:  
+		html += '''	<H3>Application Server Failure</H3>
+					<p>
+					We did not recieve a proper response from the application server.  Status Code != 200<b>
+					<br>'''
+		html += result.text
+
 	return html
 
 @app.route('/show_all_records')
@@ -109,34 +130,51 @@ def show_all_records():
 
 	url = 'http://{0}:{1}/show_all_records'.format(app_addr, app_port)
 
-	result = requests.get(url)
+	try: 
+		result = requests.get(url)
+	except:
+		html += '''	<H3>Application Server Failure</H3>
+					<p>
+					'''
+		html += 'Not able to communicate with Application Server at {0}.<b><br>'.format(app_addr)
+		return html
+
 	if (result.status_code == 200):
 		decoded_json = json.loads(result.text)
+		if decoded_json['status']== 'FAIL':
+			html += '''	<H3>Database Failure</H3>
+					<p>
+					Response from Application Server: <b>
+					'''
+			html += decoded_json['results']
+			return html
+
 		if len(decoded_json['results']) == 0:
 			html += '<font color="#2C63D5">'
 			html += "No records found."
 			return html
 
-		html += '''<table style="color:#00FC00" border="1">
+		else:
+			html += '''<table style="color:#00FC00" border="1">
 				<thead><tr>
 				'''
 
-		html += "<th>Name</th><th>Entry</th><th>Date</th>"
-		html += "</tr></thead>"
+			html += "<th>Name</th><th>Entry</th><th>Date</th>"
+			html += "</tr></thead>"
 					
-		for line in range(len(decoded_json['results'])):
-			name = decoded_json['results'][line]['name']
-			entry = decoded_json['results'][line]['entry']
-			date = decoded_json['results'][line]['date']
-			html += "<tr><td>{0}</td><td>{1}</td><td>{0}</td></tr>".format(name, entry, date)
+			for line in range(len(decoded_json['results'])):
+				name = decoded_json['results'][line]['name']
+				entry = decoded_json['results'][line]['entry']
+				date = decoded_json['results'][line]['date']
+				html += "<tr><td>{0}</td><td>{1}</td><td>{0}</td></tr>".format(name, entry, date)
 
-		html += "</table></body></html>"
+			html += "</table></body></html>"
 
 	else:   
-		html += '''	<H3>Failure</H3>
+		html += '''	<H3>Application Server Failure</H3>
 					<p>
-					Response from Application Server: <b>
-					'''
+					We did not receive a proper response from the application server.  Status Code != 200<b>
+					<br>'''
 		html += result.text
 
 	return html
@@ -151,20 +189,40 @@ def remove_db():
 
 	url = 'http://{0}:{1}/remove_db'.format(app_addr, app_port)
 
-	try:
+	try: 
 		result = requests.get(url)
-		html += '''	<H3>Success</H3>
+	except:
+		html += '''	<H3>Application Server Failure</H3>
+					<p>
+					'''
+		html += 'Not able to communicate with Application Server at {0}.<b><br>'.format(app_addr)
+		return html
+
+	if (result.status_code == 200):
+		decoded_json = json.loads(result.text)
+		if decoded_json['status']== 'FAIL':
+			html += '''	<H3>Database Failure</H3>
 					<p>
 					Response from Application Server: <b>
 					'''
-		html += result.text
-	except requests.exceptions.RequestException as error:   
-		html += '''	<H3>Failure</H3>
-					<p>
-					Response from Application Server: Comming soon!<b>
-					'''
-	return html
+			html += decoded_json['results']
+			return html
 
+		elif decoded_json['status']== 'OK':
+			html += '''	<H3>Success</H3>
+					<p>
+					Response from Application Server: <b>
+					'''
+			html += decoded_json['results']
+
+	else:
+		html += '''	<H3>Application Server Failure</H3>
+					<p>
+					We did not receive a proper response from the application server.  Status Code != 200<b>
+					<br>'''
+		html += result.text
+
+	return html
 
 @app.route('/server_info')
 def server_info():
