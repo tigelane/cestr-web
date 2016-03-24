@@ -12,7 +12,7 @@ from datetime import datetime
 headers = {'Content-type': 'application/json'}
 app_port = '5000'
 app_addr = os.getenv('APP_SERVER_IPADDR', '127.0.0.1')
-print " * APP Server: {0}".format(db_addr)
+print " * APP Server: {0}".format(app_addr)
 
 def build_menu():
 	menu_info = my_menu()
