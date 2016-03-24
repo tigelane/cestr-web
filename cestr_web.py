@@ -9,9 +9,10 @@ from datetime import datetime
 # Blue - color:#2C63D5
 # Bright Green - color:#00FC00
 
-app_addr = '172.16.32.189'
 headers = {'Content-type': 'application/json'}
 app_port = '5000'
+app_addr = os.getenv('APP_SERVER_IPADDR', '127.0.0.1')
+print " * APP Server: {0}".format(db_addr)
 
 def build_menu():
 	menu_info = my_menu()
