@@ -166,7 +166,7 @@ def show_all_records():
 				name = decoded_json['results'][line]['name']
 				entry = decoded_json['results'][line]['entry']
 				date = decoded_json['results'][line]['date']
-				html += "<tr><td>{0}</td><td>{1}</td><td>{0}</td></tr>".format(name, entry, date)
+				html += "<tr><td>{0}</td><td>{1}</td><td>{2}</td></tr>".format(name, entry, date)
 
 			html += "</table></body></html>"
 
