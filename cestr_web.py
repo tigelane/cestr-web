@@ -107,7 +107,7 @@ def show_all_records():
 		<br>
 		'''
 
-	url = '{0}:{1}/show_all_records'.format(app_addr, app_port)
+	url = 'http://{0}:{1}/show_all_records'.format(app_addr, app_port)
 
 	result = requests.get(url)
 	if (result.status_code == 200):
@@ -149,7 +149,7 @@ def remove_db():
 		<br>
 		'''
 
-	url = '{0}:{1}/remove_db'.format(app_addr, app_port)
+	url = 'http://{0}:{1}/remove_db'.format(app_addr, app_port)
 
 	try:
 		result = requests.get(url)
