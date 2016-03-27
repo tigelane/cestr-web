@@ -71,7 +71,7 @@ def my_menu():
 
     # Manual length of all the letters in the menu (including spaces) 
     # multiplied by "16" to give us a decent length for the menu
-	width = 52.0 * 16
+	width = 47.0 * 16
 	return {'menu': html, 'width': width}
 
 @app.route('/server_info')
