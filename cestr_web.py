@@ -28,12 +28,11 @@ def screen_header(width):
 		<head>
 		<meta charset="utf-8">
 		<center>
-			<img src="chester_header.jpg">
+			<img src="http://tigelane.com/graphics/blue_space-header3.jpg">
 			<title style="color:#BDBDBD">
 			Simple three tier blog program</title>
 		</center>
 		</head>
-
 		<body>
 			<center>
 			<style>
@@ -62,7 +61,6 @@ def my_menu():
 	html += '<li><a href="/remove_db">Wipe Database</a></li>'
 
 	html += '''
-
 				</li>
 			</ul>
 			</center>
@@ -366,3 +364,5 @@ if __name__ == '__main__':
 		DEBUG = True)
 
 	app.run(host='0.0.0.0', port=80)
+
+	
