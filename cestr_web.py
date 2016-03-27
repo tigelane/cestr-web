@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-from flask import Flask
+from flask import Flask, request
 app = Flask(__name__)
 
 import menu_items
@@ -41,7 +41,7 @@ def screen_header(width):
 				br {style-color:#BDBDBD"}
 			</style>
 			<h2 style="color:#BDBDBD">
-			Simple three tier blog program</h2>
+			Example Three Tier Blog Application</h2>
 			</center>
 			<br>
 		'''
@@ -57,9 +57,9 @@ def my_menu():
 				'''
 
 	html += '<li><a href="/initialize_db">Initialize DB</a></li>'
-	html += '<li><a href="/show_all_records">Show Records</a></li>'
-	html += '<li><a href="/add_record">Add a Record</a></li>'
-	html += '<li><a href="/remove_db">Remove Database</a></li>'
+	html += '<li><a href="/show_all_records">Show Entries</a></li>'
+	html += '<li><a href="/enter_record">Blog!</a></li>'
+	html += '<li><a href="/remove_db">Wipe Database</a></li>'
 
 	html += '''
 
@@ -74,6 +74,28 @@ def my_menu():
 	width = 52.0 * 16
 	return {'menu': html, 'width': width}
 
+@app.route('/server_info')
+def server_info():
+	menu_info = my_menu()
+	html = screen_header(menu_info['width'])
+	html += menu_info['menu']
+
+	html += '''
+		<center>
+		<BODY style="color:#BDBDBD"><H3>Testing Python on the Web Server</H3>
+		'''
+	html += "Python Version information:  {}".format(sys.version_info)
+	html += '''
+		<p>
+		Current date and time for this server: 
+		'''
+	html += datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+	html += '''
+		<p>
+		</BODY></HTML>
+		'''
+
+	return html
 
 @app.route('/initialize_db')
 def initialize_db():
@@ -224,27 +246,97 @@ def remove_db():
 
 	return html
 
-@app.route('/server_info')
-def server_info():
-	menu_info = my_menu()
-	html = screen_header(menu_info['width'])
-	html += menu_info['menu']
+@app.route('/enter_record')
+def enter_record():
+	html = build_menu()
+	html += '''
+		<center>
+		<BODY style="color:#D8D8D8">
+		<H3>--Add a Blog Entry--</H3>
+		<br>
+		<table style="color:#00FC00" border="1">
+		'''
+
+	html += '''
+		<FORM value="form" action="add_entry" method="post">
+		'''
+	html += '''
+		<thead><tr>
+			<th>Your Name</th>
+			<th>Blog Entry</th>
+		</tr></thead>
+		<br>
+		<tr>
+			<td><INPUT type="name" name="name"></td>
+			<td><INPUT type="entry" name="entry"></td>
+		<tr>
+		</table>
+		'''
+	html += '''
+		<br>
+		<INPUT type="submit" value="Send"> <INPUT type="reset">
+		</FORM>
+		'''
+	html += "</body></html>"
+	return html
+
+@app.route('/add_entry', methods=['POST'])
+def add_entry():
+	html = build_menu()
 
 	html += '''
 		<center>
-		<BODY style="color:#BDBDBD"><H3>Python test script</H3>
-		'''
-	html += "Python Version information:  {}".format(sys.version_info)
-	html += '''
-		<p>
-		Current date and time for this server: 
-		'''
-	html += datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-	html += '''
-		<p>
-		</BODY></HTML>
+		<BODY style="color:#D8D8D8">
+		<H3>--Posting to the Blog--</H3>
+		<br>
 		'''
 
+	if request.method != 'POST':
+		return enter_record()
+
+	name = ''
+	entry = ''
+	try:
+		name = request.form['name']
+		entry = request.form['entry']
+	except:
+		html += '''
+			<br>
+			Please make proper entries.
+			'''
+		html += "</body></html>"
+		return html
+
+	url = 'http://{0}:{1}/add_entry?name={2}&entry={3}'.format(app_addr, app_port, name, entry)
+
+	try: 
+		result = requests.post(url)
+	except:
+		html += '''	<H3>Application Server Failure</H3>
+					<p>
+					'''
+		html += 'Not able to communicate with Application Server at {0}.<b><br>'.format(app_addr)
+		return html
+
+	if (result.status_code == 200):
+		decoded_json = json.loads(result.text)
+		if decoded_json['status']== 'FAIL':
+			html += '''	<H3>Database Failure</H3>
+					<p>
+					Response from Application Server: <b>
+					'''
+			html += decoded_json['results']
+			return html
+
+		else:
+			html += '''
+				<H3>Success</H3>
+				<p>
+				Response from Application Server: <b>
+				'''
+			html += decoded_json['results']
+
+	html += "</body></html>"
 	return html
 
 @app.route('/')
@@ -274,7 +366,3 @@ if __name__ == '__main__':
 		DEBUG = True)
 
 	app.run(host='0.0.0.0', port=80)
-
-
-
-
