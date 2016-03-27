@@ -28,7 +28,7 @@ def screen_header(width):
 		<head>
 		<meta charset="utf-8">
 		<center>
-			<img src="http://tigelane.com/graphics/blue_space-header3.jpg">
+			<img src="chester_header.jpg">
 			<title style="color:#BDBDBD">
 			Simple three tier blog program</title>
 		</center>
