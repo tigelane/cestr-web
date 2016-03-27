@@ -27,6 +27,7 @@ RUN DEBIAN_FRONTEND=noninteractive pip install flask feedparser
 #################
 ADD cestr_web.py /opt/
 ADD menu_items.py /opt/
+ADD chester_header.png /opt/
 
 # By default when this container runs, simply start the application
 CMD /opt/cestr_web.py -D FOREGROUND
